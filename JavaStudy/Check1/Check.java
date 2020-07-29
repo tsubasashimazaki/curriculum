@@ -14,7 +14,7 @@ public class Check{
         * 問2
         * 以下のfor文を完成させなさい
         */
-        for(int i = 0; i < data.length; i++){
+        for(int i = 0; i < data.length; i++){ //lengthは配列の要素数を調べる。インデックスとは違うのでdata.lengthでは5という数字が取得できる
             System.out.print(data[i] + " ");
         }
         System.out.println(); //3 1 2 7 5
