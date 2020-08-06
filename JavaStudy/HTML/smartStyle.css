@@ -1,0 +1,24 @@
+
+@media screen and (min-width: 767px) {
+/* ここには767px以上の場合に適用 */
+
+}
+
+@media screen and (max-width: 767px) {
+    /* 最大767px以下の場合に適用 */
+    #wrapper {
+        width: 80%;
+        margin: 0 auto;
+    }
+
+}
+
+@media screen and (max-width: 479px) {
+    /* ウィンドウ幅が最大479pxまでの場合に適用 */
+    .header {
+        height: 300px;
+    }
+    .footer {
+        height: 200px;
+    }
+}

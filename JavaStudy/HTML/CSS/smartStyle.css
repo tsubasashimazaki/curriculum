@@ -1,0 +1,55 @@
+/* @media screen and (max-width: 767px) {
+
+    #wrapper {
+        width: 80%;
+    }
+} */
+
+@media screen and (max-width:479px) {
+    /* 3カラムレイアウト */
+    #wrapper {
+        /* 全体の幅を400px */
+        width: 400px;
+    }   
+    .left {
+        width: 200px;
+        height: 500px;
+    }
+    .left-group {
+        width: 90px;
+        height: 60px;
+    }
+    .left-upper {
+        width: 90px;
+        height: 60px;
+    }
+    .left-lower {
+        width: 90px;
+        height: 320px;
+    }
+    .center {
+        float: none;
+        width: 200px;
+        
+    }
+    /* leftの下にcenterを持ってくる */
+    
+
+    .right {
+        width: 50%;
+        float: none;
+
+    }
+    .right-inner {
+        width: 110px;
+    }
+    .right-inner-text {
+        font-size: 5px;
+        padding: 10px;
+        background-color: orange;
+        border: 5px solid tomato;
+    }
+    .footer {
+        width: 500px;
+    }
+}
