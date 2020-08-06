@@ -1,0 +1,43 @@
+#wrapper {
+    width: 80%;
+    margin: 100px auto;
+}
+.header {
+    background-color: #ff0;
+    height: 150px;
+    width: 600px;
+}
+.topSkyblue {
+    background-color: #3ff;
+}
+.topRed {
+    background-color: #f00;
+}
+.topBlue {
+    background-color: #00f;
+}
+.topSkyblue,
+.topRed,
+.topBlue {
+    height: 150px;
+    width: 200px;
+}
+.middleGreen {
+    background-color: #0f0;
+    height: 150px;
+    width: 500px;
+}
+.middlePink {
+    background-color: #f0f;
+    height: 150px;
+    width: 100px;
+}
+.bottom {
+    background-color: #3ff;
+    height: 150px;
+    width: 600px;
+}
+.top,
+.middle {
+    display: flex;
+}
