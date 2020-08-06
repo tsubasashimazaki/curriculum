@@ -1,0 +1,42 @@
+@media screen and (max-width: 479px) {
+    .header {
+        width: 200px;
+        height: 200px;
+    }
+    .navgation {
+        float: none;
+        margin: 0 70px;
+        padding: 20px 0;
+    }
+    .navItem {
+        clear: both;
+
+    }
+    .navItem:nth-child(2) {
+        border-right: 10px solid #fff;
+        border-left: 10px solid #fff;
+        border-top: none;
+        border-bottom: none;
+    }
+    /* ---------------- Main Start ----------------*/
+    .mainLeft {
+        float: none;
+        width: 200px;
+        height: 100px;
+    }
+    .mainRight {
+        float: none;
+        width: 200px;
+        height: 210px;
+    }
+    .mainRightItems {
+        margin: 0;
+        padding: 20px 30px;
+        
+    }
+    /* ---------------- Fotter Start ----------------*/
+    .fotter {
+        width: 200px;
+    }
+    
+}
