@@ -1,0 +1,53 @@
+#wrapper {
+    width: 80%;
+    margin: 100px auto;
+}
+.topYellow {
+    background-color: #ffff66;
+    height: 100px;
+    width: 150px;
+}
+.topGray {
+    background-color: #666;
+    height: 100px;
+    width: 200px;
+}
+
+.middleRed {
+    background-color: #ff3333;
+    height: 150px;
+    width: 150px;
+}
+.middleBlue {
+    background-color: #3366ff;
+    height: 150px;
+    width: 100px;
+}
+.middleGreen {
+    background-color: #693;
+    height: 150px;
+    width: 100px;
+}
+
+.bottomOrange {
+    background-color: #f96;
+    height: 100px;
+    width: 150px;
+}
+.bottomYellow {
+    background-color: #ffcc;
+    height: 100px;
+    width: 100px;
+}
+.bottomPurple {
+    background-color: #306;
+    height: 100px;
+    width: 100px;
+}
+.top,
+.middle,
+.bottom {
+    display: flex;
+}
+
+
