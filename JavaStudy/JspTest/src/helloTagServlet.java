@@ -20,10 +20,11 @@ public class helloTagServlet implements Tag {
 		this.parentTag = parentTag;
 	}
 
-	public Tag getParent() {
+	public Tag getParent() { 
 		return this.parentTag;
 	}
-
+	
+//	doStart(): JSPからtaglibディレクトリを指定した際に行いたい処理記述
 	public int doStartTag() throws JspException {
 
 		try {
@@ -33,8 +34,9 @@ public class helloTagServlet implements Tag {
 		}
 		return SKIP_BODY;
 	}
-
+	// doStartTagが終わったら実行される
 	public int doEndTag() throws JspException {
+		// JSPページにコントローラーで処理を行なった結果を返す(今回はHello World出力)
 		return EVAL_PAGE;
 	}
 
@@ -43,4 +45,5 @@ public class helloTagServlet implements Tag {
 }
 
 // ------------- 聞きたいことリスト -------------
-//setメソッドの引数で半角スペース空いているのは何だろう
+// setメソッドの引数で半角スペース空いているのは何だろう
+// release()は...

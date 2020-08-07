@@ -1,0 +1,21 @@
+@charset "UTF-8";
+
+
+header div,
+footer div {
+	background-color: gray;
+}
+header label,
+footer label {
+	display: inline-block;
+	padding: 10px;
+	color: #fff;
+}
+table {
+	padding: 50px 0px;
+}
+header label:nth-child(2) {
+	color: black;
+	font-size: 10px;
+}
+
