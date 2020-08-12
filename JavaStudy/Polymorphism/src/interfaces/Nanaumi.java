@@ -2,8 +2,8 @@ package interfaces;
 
 public class Nanaumi implements OrderFromMotoki, OrderFromShihandai {
 
-	private String name;
-	private String date;
+	private static String name;
+	private static String date;
 
 	public Nanaumi(String n, String yyyyMM) {
 		name = n;
@@ -12,7 +12,7 @@ public class Nanaumi implements OrderFromMotoki, OrderFromShihandai {
 
 //	司令(インターフェース)が増えたときにフラグによって実行されるメソッドをまとめておく
 
-	private void submitOrder(final int shoriFlg) {
+	private static void submitOrder(final int shoriFlg) {
 		String nameAnd = name + "、";
 
 		if (shoriFlg == 0) {
@@ -27,22 +27,22 @@ public class Nanaumi implements OrderFromMotoki, OrderFromShihandai {
 	}
 
 	// 何もしていません
-	public void doNothing() {
+	public static void doNothing() {
 		submitOrder(-1);
 	}
 
 	@Override
-	public void daseyaKinmuhyo() {
+	public static void daseyaKinmuhyo() {
 		submitOrder(0);
 	}
 
 	@Override
-	public void daseyaKotsuhi() {
+	public static void daseyaKotsuhi() {
 		submitOrder(1);
 	}
 
 	@Override
-	public void goToSevenEleven() {
+	public static void goToSevenEleven() {
 		System.out.println("先にセブンイレブン行ってきます");
 	}
 
