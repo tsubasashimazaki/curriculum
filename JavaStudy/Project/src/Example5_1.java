@@ -14,7 +14,7 @@ public class Example5_1 {
 	// ユーザー名
 	private static final String USER = "postgres";
 	// パスワード
-	private static final String PASS = "postgres";
+	private static final String PASS = "password123";
 
 	public static void main(String[] args) {
 
