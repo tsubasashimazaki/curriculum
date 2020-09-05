@@ -27,22 +27,22 @@ public class Nanaumi implements OrderFromMotoki, OrderFromShihandai {
 	}
 
 	// 何もしていません
-	public static void doNothing() {
+	public void doNothing() {
 		submitOrder(-1);
 	}
 
 	@Override
-	public static void daseyaKinmuhyo() {
+	public void daseyaKinmuhyo() {
 		submitOrder(0);
 	}
 
 	@Override
-	public static void daseyaKotsuhi() {
+	public void daseyaKotsuhi() {
 		submitOrder(1);
 	}
 
 	@Override
-	public static void goToSevenEleven() {
+	public void goToSevenEleven() {
 		System.out.println("先にセブンイレブン行ってきます");
 	}
 

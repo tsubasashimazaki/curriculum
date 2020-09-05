@@ -21,9 +21,8 @@ public class EmployeeController extends HttpServlet { //HttpServletの継承す�
             throws ServletException, IOException {
         try {// try:例外が発生するかもしれない処理を記述
             // 問① index.htmlから送信されたIDとPassWordの値を取得できるように修正しましょう。
-            String id = request.getParameter("id"); //name属性がid情報を持ってくる
+            String id = request.getParameter("id"); //name属性がid情報を持ってくる //request.:リクエストの範囲で使えるgetParameter
             String password = request.getParameter("pass"); //name属性がpassを持ってくる
-
             /*
              *  IDとPassWordと元に、社員情報を検索する関数の呼び出し、結果をJSPに渡す処理
              *  ※ EmployeeBeanとEmployeeServiceをimportするのを忘れないでください。
@@ -34,13 +33,14 @@ public class EmployeeController extends HttpServlet { //HttpServletの継承す�
              EmployeeBean EmployeeBean = empService.search(id, password);
             // 問④ nullの部分に適切な引数をセットする。
              // setAttribute("属性の名前", "属性値");
-            request.setAttribute("EmployeeBean", EmployeeBean);// setAttribute(属性名, 属性の値)
+            request.setAttribute("EmployeeBean", EmployeeBean);// setAttribute(属性名, 属性の値)EmployeeBeanにEmployeeBeanを下記のフォワードで渡す
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            ServletContext context = this.getServletContext(); //値を保管するServletContextオブジェクト
+            ServletContext context = this.getServletContext(); //getServletContext:サーブレットで設定したファイルをcontextに保管
             RequestDispatcher dispatcher = context.getRequestDispatcher("/index.jsp");// getRequestDispatcher():ServletからJSPを表示するためのファイル
             dispatcher.forward(request, response); //フォワードを行う
+            System.out.println(request);
             // RequestDispatcher: doXXXXから抜けた後のページ遷移で使うことが多い
         }
     }

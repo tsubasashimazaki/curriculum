@@ -33,7 +33,16 @@ public class EmployeeService {
     EmployeeBean employeeDate = null;
     // 送信されたIDとPassWordを元に社員情報を検索するためのメソッド
     public EmployeeBean search(String id, String password) {
-        Connection connection = null;//インタフェース? 処理がないから必ずオーバーライドして！！！！
+
+    	/* ローカル変数: メソッド内の変数。そのメソッド内でしか使えない。
+    	 * メンバ変数(フィールド変数): クラス内(メソッドの外)で宣言された変数。クラス内であれば自由に使える。
+    	 *
+    	 * --------つまずき箇所 ---------
+    	 * インターフェース型のオブジェクト → オブジェクトをインターフェースとして使えるようにしたもの
+    	 * クラス型のオブジェクト → クラスオブジェクトは変数に保存できる
+    	 *
+    	 */
+        Connection connection = null; //Connectionインターフェース型の変数connectionをセット
         Statement statement = null;
         ResultSet resultSet = null;
         PreparedStatement preparedStatement = null;
@@ -56,6 +65,7 @@ public class EmployeeService {
             // 問④ preparedStatementを使って、一番目のindexに今の時間をセットしてください。2番目のindexにIDをセットしてください。
             preparedStatement.setString(1, login_time);// preparedStatement: プリコンパイラされたSQL文を表すオブジェクト
             preparedStatement.setString(2, id);
+
 
             // 問⑤ UPDATEを実行する文を記述
             preparedStatement.executeUpdate(); //実行時の引数には何も入れない
