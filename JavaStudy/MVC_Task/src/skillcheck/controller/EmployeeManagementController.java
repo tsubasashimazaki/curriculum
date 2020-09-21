@@ -28,208 +28,214 @@ import skillcheck.util.RequestTypeUtil.RequestType;
  */
 public final class EmployeeManagementController extends BaseServlet {
 
-    /**
-     * コンストラクタ
-     */
-    public EmployeeManagementController() {
-        super(); //親クラスの実行
-    }
+	/**
+	 * コンストラクタ
+	 */
+	public EmployeeManagementController() {
+		super(); //親クラスの実行
+	}
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Logger.logStart(new Throwable());
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Logger.logStart(new Throwable());
 
-        RequestType requestType = null;
+		RequestType requestType = null;
 
-        // FIXME Step-4-1: 社員情報管理サービスのインスタンスを生成しなさい。
-        // Tips: 定義済みフィールド変数を使用
-        // [ここへ記述]
-        EmployeeManagementService  ems = new EmployeeManagementService();
-        boolean hasSession = false;
+		// FIXME Step-4-1: 社員情報管理サービスのインスタンスを生成しなさい。
+		// Tips: 定義済みフィールド変数を使用
+		// [ここへ記述]
+		//        EmployeeManagementService pEmployeeBean = new EmployeeManagementService();
+		ems = new EmployeeManagementService();
 
-        try {
-            // セッションチェック
-            hasSession = super.validateSession(request, response);
-            Logger.log(new Throwable(), "hasSession = " + hasSession);
+		boolean hasSession = false;
 
-            // RequestTypeに未存在のキー値が指定された場合は例外発生
-            requestType = this.getRequestType(request);
-            Logger.log(new Throwable(), "RequestType = " + requestType.toString());
+		try {
+			// セッションチェック
+			hasSession = super.validateSession(request, response);
+			Logger.log(new Throwable(), "hasSession = " + hasSession);
 
-            // セッション切れの場合は早期離脱（finallyは実行される）
-            if (!hasSession) return;
+			// RequestTypeに未存在のキー値が指定された場合は例外発生
+			requestType = this.getRequestType(request);
+			Logger.log(new Throwable(), "RequestType = " + requestType.toString());
 
-            switch (requestType) {
-            case LOGOUT:
-                HttpSession session = request.getSession(false);
-                if (Objects.nonNull(session)) session.invalidate();
-                hasSession = false;
-                super.setRedirectInfo(true, session, request, response);
-                break;
-            default:
-                // NOP
-                break;
-            }
-        } catch (NullPointerException e) {
-            super.executeSetExceptionInfo(e, ConstMessage.EXCEPTION_NULL,  0);
-        } catch (MVCException e) {
-            this.responseBean = e.getResponseBean();
-            Logger.log(e);
-        } finally {
+			// セッション切れの場合は早期離脱（finallyは実行される）
+			if (!hasSession) return;
 
-            Logger.log(new Throwable(), "reqStatus  = " + this.responseBean.getRequestStaus());
-            Logger.log(new Throwable(), "reqMessage = " + this.responseBean.getMessage());
+			switch (requestType) {
+			case LOGOUT:
+				HttpSession session = request.getSession(false);
+				if (Objects.nonNull(session)) session.invalidate();
+				hasSession = false;
+				super.setRedirectInfo(true, session, request, response);
+				break;
+			default:
+				// NOP
+				break;
+			}
+		} catch (NullPointerException e) {
+			super.executeSetExceptionInfo(e, ConstMessage.EXCEPTION_NULL,  0);
+		} catch (MVCException e) {
+			this.responseBean = e.getResponseBean();
+			Logger.log(e);
+		} finally {
 
-            request.setAttribute(CONST_REQUST_KEY_FOR_RESPONSE_BEAN, this.responseBean);
+			Logger.log(new Throwable(), "reqStatus  = " + this.responseBean.getRequestStaus());
+			Logger.log(new Throwable(), "reqMessage = " + this.responseBean.getMessage());
 
-            Logger.log(new Throwable(), "遷移先 = " + this.destinationTarget);
+			request.setAttribute(CONST_REQUST_KEY_FOR_RESPONSE_BEAN, this.responseBean);
 
-            if (hasSession) {
-                this.getServletContext().getRequestDispatcher(this.destinationTarget).forward(request, response);
-            }
-            this.ems = null;
-            this.responseBean = null;
-        }
+			Logger.log(new Throwable(), "遷移先 = " + this.destinationTarget);
 
-        Logger.logEnd(new Throwable());
-    }
+			if (hasSession) {
+				this.getServletContext().getRequestDispatcher(this.destinationTarget).forward(request, response);
+			}
+			this.ems = null;
+			this.responseBean = null;
+		}
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Logger.logStart(new Throwable());
+		Logger.logEnd(new Throwable());
+	}
 
-        // DBの文字コード設定と合わせる
-        request.setCharacterEncoding("utf-8");
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Logger.logStart(new Throwable());
 
-        this.responseBean = new ResponseBean();// メッセージ、ステータス、employeeリスト
+		// DBの文字コード設定と合わせる
+		request.setCharacterEncoding("utf-8");
+		//responseBeanの中身を調べる
+		this.responseBean = new ResponseBean();// メッセージ、ステータス、employeeリスト
 
-        RequestType requestType = null;
-        destinationTarget = null;
+		RequestType requestType = null; //変数を空にする
+		destinationTarget = null;
 
-        List<String> reqEmpIdList = null;
-        boolean hasSession = true;
-        boolean isLoginError = false;
+		List<String> reqEmpIdList = null;
+		boolean hasSession = true;
+		boolean isLoginError = false;
 
-        /* 関数型インターフェース（ラムダ式）- START */
-        // MEMO: Functionは、apply(引数)で処理を実行
+		/* 関数型インターフェース（ラムダ式）- START */
+		// MEMO: Functionは、apply(引数)で処理を実行
 
-        // リクエストより社員番号を取得（※削除時は複数の可能性あり）: 関数型インターフェース（ラムダ式）
-        Function<HttpServletRequest, List<String>> rmdGetEmpIdList = (rmdRequest) -> {
-            // FIXME Step-4-2: 各jspよりPOSTで送信されたリクエストパラメーターの社員番号を取得しなさい。
-            // Tips: jsp側のname属性と一致させること
-            final String pEmpId = request.getParameter("empId");
-            return Arrays.asList(pEmpId);
-        };
-        /* 関数型インターフェース（ラムダ式）- END */
+		// リクエストより社員番号を取得（※削除時は複数の可能性あり）: 関数型インターフェース（ラムダ式）
+		//rmdRequestのメソッド内容が{ここに記述}
+		Function<HttpServletRequest, List<String>> rmdGetEmpIdList = (rmdRequest) -> {
+			// FIXME Step-4-2: 各jspよりPOSTで送信されたリクエストパラメーターの社員番号を取得しなさい。
+			// Tips: jsp側のname属性と一致させること
+			final String pEmpId = request.getParameter("empId");//request:引数のrequest。HTMLのname属性の値。名前と値のペアで送られてくる
+			return Arrays.asList(pEmpId);//リクエストをListにする
 
-        try {
-            requestType = this.getRequestType(request);
-            Logger.log(new Throwable(), "RequestType = " + requestType.toString());
+			//Function<T, R> の抽象メソッド。
+			//T 型の引数を受け取って、 R 型の値を返す処理を実装する。ここでの引数はTでempId。このTをRで返す
+		};
+		/* 関数型インターフェース（ラムダ式）- END */
 
-            // ログイン以外の場合
-            if (!RequestType.LOGIN.equals(requestType)) {
-                // 認証チェック
-                hasSession = super.validateSession(request, response);
-                Logger.log(new Throwable(), "hasSession = " + hasSession);
-                // セッション切れの場合は早期離脱（finallyは実行される）
-                if (!hasSession) return;
-            }
+		try {
+			requestType = this.getRequestType(request);//引数のrequest
+			Logger.log(new Throwable(), "RequestType = " + requestType.toString()); //LOGINが入っている
 
-            // FIXME Step-4-3: 社員情報管理サービスのインスタンス変数を生成しなさい。
-            // Tips: 定義済みフィールド変数を使用
-            // [ここへ記述]
-            EmployeeManagementService  ems = new EmployeeManagementService();
+			// ログイン以外の場合
+			if (!RequestType.LOGIN.equals(requestType)) {
+				// 認証チェック
+				hasSession = super.validateSession(request, response);
+				Logger.log(new Throwable(), "hasSession = " + hasSession);
+				// セッション切れの場合は早期離脱（finallyは実行される）
+				if (!hasSession) return;
+			}
+
+			// FIXME Step-4-3: 社員情報管理サービスのインスタンス変数を生成しなさい。
+			// Tips: 定義済みフィールド変数を使用
+			// [ここへ記述]
+			ems = new EmployeeManagementService();
 
 
 
-            reqEmpIdList = rmdGetEmpIdList.apply(request);
-            reqEmpIdList.forEach(id -> Logger.log(new Throwable(), "reqEmpId = " + id));
+			reqEmpIdList = rmdGetEmpIdList.apply(request);
+			reqEmpIdList.forEach(id -> Logger.log(new Throwable(), "reqEmpId = " + id)); //ユーザーが入力した社員番号
 
-            // リクエストごとに条件分岐させる
-            switch (requestType) {
-            case LOGIN:
-                Logger.log(new Throwable(), "--- ログイン ---");
-                // ログインエラーの場合はリダイレクトする
-                isLoginError = super.validateLogin(request);
-                break;
-            default:
-                // MEMO: LOGOUTは対象外のため、default扱いとする
-                break;
-            }
-        } catch (NullPointerException e) {
-            super.executeSetExceptionInfo(e, ConstMessage.EXCEPTION_NULL, -1);
-        } catch (MVCException e) {
-            this.responseBean = e.getResponseBean();
-            Logger.log(e);
-        } finally {
+			// リクエストごとに条件分岐させる
+			switch (requestType) {
+			case LOGIN:
+				Logger.log(new Throwable(), "--- ログイン ---");
+				// ログインエラーの場合はリダイレクトする
+				isLoginError = super.validateLogin(request);
+				break;
+			default:
+				// MEMO: LOGOUTは対象外のため、default扱いとする
+				break;
+			}
+		} catch (NullPointerException e) {
+			super.executeSetExceptionInfo(e, ConstMessage.EXCEPTION_NULL, -1);
+		} catch (MVCException e) {
+			this.responseBean = e.getResponseBean();
+			Logger.log(e);
+		} finally {
 
-            Logger.log(new Throwable(), "reqStatus  = " + this.responseBean.getRequestStaus());
-            Logger.log(new Throwable(), "reqMessage = " + this.responseBean.getMessage());
+			Logger.log(new Throwable(), "reqStatus  = " + this.responseBean.getRequestStaus()); //2:エラー
+			Logger.log(new Throwable(), "reqMessage = " + this.responseBean.getMessage()); //ヌルポエラー
 
-            // FIXME Step-4-4: 取得結果（ResponseBean）をjspへ渡すための処理を記述しなさい。
-            // Tips1: リクエストへレスポンス情報をセット
-            // Tips2: キー名は「CONST_REQUST_KEY_FOR_RESPONSE_BEAN」使用
-            // [ここへ記述]
-            request.setAttribute("CONST_REQUST_KEY_FOR_RESPONSE_BEAN", responseBean);
+			// FIXME Step-4-4: 取得結果（ResponseBean）をjspへ渡すための処理を記述しなさい。
+			// Tips1: リクエストへレスポンス情報をセット
+			// Tips2: キー名は「CONST_REQUST_KEY_FOR_RESPONSE_BEAN」使用
+			// [ここへ記述]
+			request.setAttribute("CONST_REQUST_KEY_FOR_RESPONSE_BEAN", responseBean);
 
-            Logger.log(new Throwable(), "遷移先 = " + this.destinationTarget);
+			Logger.log(new Throwable(), "遷移先 = " + this.destinationTarget);
 
-            // ログイン成功、かつ、セッションが存在、かつ、フォワード先が設定済みの場合のみフォワード
-            if (!isLoginError && hasSession) {
-                this.getServletContext().getRequestDispatcher(this.destinationTarget).forward(request, response);
-            } else {
-                response.sendRedirect(CONST_DESTINATION_LOGIN_JSP);
-            }
+			// ログイン成功、かつ、セッションが存在、かつ、フォワード先が設定済みの場合のみフォワード
+			if (!isLoginError && hasSession) {
+				this.getServletContext().getRequestDispatcher(this.destinationTarget).forward(request, response);
+			} else {
+				response.sendRedirect(CONST_DESTINATION_LOGIN_JSP);
+			}
 
-            this.ems = null;
-            this.responseBean = null;
-        }
+			this.ems = null;
+			this.responseBean = null;
+		}
 
-        Logger.logEnd(new Throwable());
-    }
+		Logger.logEnd(new Throwable());
+	}
 
-    /**
-     * リクエストタイプを取得
-     *
-     * @param requestTypeNames リクエストパラメーターより取得したパラメーター名
-     * @return リクエストタイプ（{@link RequestType}）
-     * @throws MVCException
-     */
-    private RequestType getRequestType(final HttpServletRequest request) throws MVCException {
-        Logger.logStart(new Throwable());
+	/**
+	 * リクエストタイプを取得
+	 *
+	 * @param requestTypeNames リクエストパラメーターより取得したパラメーター名
+	 * @return リクエストタイプ（{@link RequestType}）
+	 * @throws MVCException
+	 */
+	private RequestType getRequestType(final HttpServletRequest request) throws MVCException {
+		Logger.logStart(new Throwable());
 
-        final String requestTypeName = request.getParameter(CONST_ELEMENT_NAME_REQUEST); //request
-        Logger.log(new Throwable(), "requestTypeName = " + requestTypeName);
+		final String requestTypeName = request.getParameter(CONST_ELEMENT_NAME_REQUEST); //CENR:定数request
+		Logger.log(new Throwable(), "requestTypeName = " + requestTypeName);
 
-        RequestType requestType = null;
+		RequestType requestType = null;
 
-        if (Objects.isNull(this.responseBean)) this.responseBean = new ResponseBean();
+		if (Objects.isNull(this.responseBean)) this.responseBean = new ResponseBean();
 
-        try {
-            if (Objects.isNull(requestTypeName)) {
-                // この処理に到達してしまう場合は、リクエスト時に押下したボタン（疑似ボタン）の「name」、「value」をチェック
-                this.responseBean.setRequestStaus(1);
-                this.responseBean.setEmplyeeBeanList(new ArrayList<>(0));
-                this.responseBean.setMessage(ConstMessage.ERROR_UNKNOWN_REQUEST);
-            } else {
-                // RequestTypeに未存在のキー値が指定された場合は例外発生
-                requestType = RequestTypeUtil.RequestType.keyValueOf(requestTypeName);
-            }
-        } catch (IllegalArgumentException e) {
-            super.executeSetExceptionInfo(e, ConstMessage.EXCEPTION_ARGUMENT, 0);
-        } finally {
-            Logger.log(new Throwable(), "this.responseBean = " + this.responseBean);
+		try {
+			if (Objects.isNull(requestTypeName)) {
+				// この処理に到達してしまう場合は、リクエスト時に押下したボタン（疑似ボタン）の「name」、「value」をチェック
+				this.responseBean.setRequestStaus(1);
+				this.responseBean.setEmplyeeBeanList(new ArrayList<>(0));
+				this.responseBean.setMessage(ConstMessage.ERROR_UNKNOWN_REQUEST);
+			} else {
+				// RequestTypeに未存在のキー値が指定された場合は例外発生
+				requestType = RequestTypeUtil.RequestType.keyValueOf(requestTypeName);
+			}
+		} catch (IllegalArgumentException e) {
+			super.executeSetExceptionInfo(e, ConstMessage.EXCEPTION_ARGUMENT, 0);
+		} finally {
+			Logger.log(new Throwable(), "this.responseBean = " + this.responseBean);
 
-            // 何らかの理由でrequestTypeがnull、または、リクエストステータス > 0（エラーあり）の場合
-            if (Objects.isNull(requestType) || this.responseBean.getRequestStaus() > 0) {
-                // リクエスト対象の画面へ戻す
-                this.destinationTarget = request.getParameter(CONST_REQUST_KEY_FOR_SENDER);
-                throw new MVCException(this.responseBean);
-            }
-        }
+			// 何らかの理由でrequestTypeがnull、または、リクエストステータス > 0（エラーあり）の場合
+			if (Objects.isNull(requestType) || this.responseBean.getRequestStaus() > 0) {
+				// リクエスト対象の画面へ戻す
+				this.destinationTarget = request.getParameter(CONST_REQUST_KEY_FOR_SENDER);
+				throw new MVCException(this.responseBean);
+			}
+		}
 
-        Logger.logEnd(new Throwable());
-        return requestType;
-    }
+		Logger.logEnd(new Throwable());
+		return requestType;
+	}
 
 }

@@ -49,7 +49,6 @@ public final class EmployeeManagementService extends BaseService implements Empl
     @Override
     public ResponseBean getEmployeeData(final ExecuteCase eCase, EmployeeBean pEmployeeBean) throws MVCException {
         Logger.logStart(new Throwable());
-
         this.responseBean = this.executeDBAccess(eCase, Arrays.asList(pEmployeeBean));
 
         Logger.logEnd(new Throwable());
@@ -66,7 +65,7 @@ public final class EmployeeManagementService extends BaseService implements Empl
      */
     private ResponseBean executeDBAccess(final ExecuteCase eCase, final List<EmployeeBean> pEmployeeBeanList) throws MVCException {
         Logger.logStart(new Throwable());
-        Logger.log(new Throwable(), "ExecuteCase = " + eCase.toString());
+        Logger.log(new Throwable(), "ExecuteCase = " + eCase.toString());//eCase:FIND_EMPID
 
         // jsp側での余計な判定回避ため、nullの可能性を潰す
         List<EmployeeBean> empResultList = new ArrayList<>(0);
@@ -97,12 +96,12 @@ public final class EmployeeManagementService extends BaseService implements Empl
                 // Tips1: セット項目: 社員番号、パスワード、名前、メールアドレス、プログラミング言語、コメント
                 // Tips2: 正解パターンは複数あり
                 EmployeeBean employeeBean = new EmployeeBean(
-                        this.resultSet.getString("empId"),
-                        this.resultSet.getString("password"),
-                        this.resultSet.getString("name"),
-                        this.resultSet.getString("mail"),
-                        this.resultSet.getString("programingLanguage"),
-                        this.resultSet.getString("comment"));
+                        resultSet.getString("empId"),
+                        resultSet.getString("password"),
+                        resultSet.getString("name"),
+                        resultSet.getString("mail"),
+                        resultSet.getString("programinglanguage"),
+                        resultSet.getString("comment"));
 
                 // 社員情報リストへ追加
                 empResultList.add(employeeBean);
@@ -175,7 +174,7 @@ public final class EmployeeManagementService extends BaseService implements Empl
         try {
             // 「全件検索」以外の場合は、条件クエリを追加する
             switch (eCase) {
-            case FIND_ALL: //enum定数:
+            case FIND_ALL:
                 sbQuery.append(ConstSQL.SELECT_BY_DELETE_FLG_ZERO);// SELECT_BACEにこれを連結
                 //SELECT_BACEとSELECT_BY_DELETE_FLG_ZEROを結合してresultSetに格納
                 this.resultSet = this.connection.createStatement().executeQuery(sbQuery.toString());// ここのthisって？
@@ -188,12 +187,11 @@ public final class EmployeeManagementService extends BaseService implements Empl
                 // Tips2: 格納先はローカル変数のempとすること 170行目
                 // [ここへ記述]
             	//ループ？？？
-                emp = pEmployeeBeanList.get(0);
+//                emp = pEmployeeBeanList.get(0);
+                emp = pEmployeeBeanList.stream().findFirst().orElse(null);
 
 
-
-
-                if (Objects.nonNull(emp)) {
+                if (Objects.nonNull(emp)) {//Listから社員情報が取れたら
                     Logger.log(new Throwable(), "pEmployeeBeanList[0].empId = " + emp.getEmpId());
 
                     sbQuery.append(ConstSQL.SELECT_BY_EMPID);
@@ -206,7 +204,6 @@ public final class EmployeeManagementService extends BaseService implements Empl
                     preparedStatement = connection.prepareStatement(sbQuery.toString());//SELECT文の追加
 
 
-
                     // LIKEを使用するため、パラメータを編集
                     final String empId = ExecuteCase.FIND_BY_EMPID_WITH_LIKE.equals(eCase)// equals(文字列)文字列の比較
                             ? ("%" + emp.getEmpId() + "%")
@@ -215,13 +212,11 @@ public final class EmployeeManagementService extends BaseService implements Empl
                     // FIXME Step-5-6: preparedStatementに適切なパラメーターをセットしなさい。
                     // Tips: パラメータをセットするインデックスに注意
                     // [ここへ記述]
-                    preparedStatement.setString(1, empId); //SELECT文の1つにempIdをセット
-
+                    preparedStatement.setString(1, empId); //SQLExeption
 
                     // FIXME Step-5-7: preparedStatementよりSQL(SELECT文)を実行し、resultSetへ結果を格納しなさい。
                     // [ここへ記述]
-                    resultSet = preparedStatement.executeQuery();//問題文のまま
-
+                    resultSet = preparedStatement.executeQuery();//SQLExeptionで例外発生
                     Logger.log(new Throwable(), "SQL: " +  this.preparedStatement.toString());
                 }
                 break;
@@ -229,6 +224,7 @@ public final class EmployeeManagementService extends BaseService implements Empl
                 // NOP
                 break;
             }
+            //メッセージの吐き出し
         } catch (SQLException e) {
             super.executeSetExceptionInfo(e, ConstMessage.EXCEPTION_SQL);
         } catch (IndexOutOfBoundsException e) {

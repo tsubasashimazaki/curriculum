@@ -31,7 +31,7 @@ public abstract class BaseServlet extends HttpServlet {
 
     // FIXME Step-3: 定数定義
     // FIXME Step-3-1: リクエスト判別用のボタンの属性名を記述しなさい。
-    protected static final String CONST_ELEMENT_NAME_REQUEST = "request";
+    protected static final String CONST_ELEMENT_NAME_REQUEST = "requestType";
     protected static final String CONST_REQUST_KEY_FOR_SENDER = "sender";
     protected static final String CONST_REQUST_KEY_FOR_REDIRECT = "redirect";
     protected static final String CONST_REQUST_KEY_FOR_RESPONSE_BEAN = "responseBean";
@@ -86,7 +86,7 @@ public abstract class BaseServlet extends HttpServlet {
             try {
                 // セッション情報を取得
                 final Object loginSession = (Object) session.getAttribute(CONST_SESSION_KEY_FOR_LOGIN);
-                if (Objects.isNull(loginSession)) { //isNull:Nullか判別
+                if (Objects.isNull(loginSession)) { //isNull:Nullか判別 Objectsクラス
                     // ここに到達した場合は、セッション情報の設定方法を確認
                     Logger.log(new Throwable(), "セッション: ログイン情報なし");
                     this.setRedirectInfo(false, session, request, response);
@@ -120,11 +120,11 @@ public abstract class BaseServlet extends HttpServlet {
         // セション情報として登録
         session = request.getSession(true);
 
-        // セッションタイムアウト時のみメッセージをセット
-        if (!isLogout) session.setAttribute(CONST_REQUST_KEY_FOR_REDIRECT, ConstMessage.ERROR_SESSION_INVALID);
+        // セッションタイムアウト時のみメッセージをセットsetAttribute(name,value)nameには文字列で属性の名前,valueには設定したい値
+        if (!isLogout) session.setAttribute(CONST_REQUST_KEY_FOR_REDIRECT, ConstMessage.ERROR_SESSION_INVALID);//Redirectはセッションが切れましたというメッセージ
 
         // セッション情報（ログイン状態）が未存在の場合、ログイン画面へリダイレクト
-        response.sendRedirect(CONST_DESTINATION_LOGIN_JSP);
+        response.sendRedirect(CONST_DESTINATION_LOGIN_JSP);//sendRedirect()引数に飛ばしたいURLを指定
     }
 
     /**
@@ -140,9 +140,9 @@ public abstract class BaseServlet extends HttpServlet {
 
         EmployeeBean resEmployeeBean = null;
         String message = "";
-        boolean isLoginError = false;
-
-        final String reqEmpId = request.getParameter("empId").trim();
+        boolean isLoginError = false; //ログイン時にエラーがあった場合tureを返す
+        // trim() inputタグの空白を消す
+        final String reqEmpId = request.getParameter("empId").trim();//getParamater()引数にformのname属性
         final String reqPassword = request.getParameter("password").trim();
 
         try {
@@ -151,11 +151,17 @@ public abstract class BaseServlet extends HttpServlet {
             // Tips2: 完全一致検索の社員情報取得を呼び出すこと
             // Tips3: 第二引数の渡し方に注意すること
             // ←ここへ記述
-        	// 第一引数にExecuteCaseクラスの定数、第二引数がなんだろ
-        	ems.getEmployeeData(ExecuteCase.FIND_BY_EMPID, resEmployeeBean);
+            // pEmployeeBean <>入力情報の社員情報Bean<>
+//        	resEmployeeBean.setPassword(reqPassword);
+//        	resEmployeeBean.setEmpId(reqEmpId);
+        	EmployeeBean pEmployeeBean = new EmployeeBean(reqEmpId);
+
+        	responseBean = ems.getEmployeeData(ExecuteCase.FIND_BY_EMPID,pEmployeeBean);//戻 responseBean
 
             // 最初の1件を取得
-            resEmployeeBean = responseBean.getEmplyeeBeanList().stream().findFirst().orElse(null);
+            resEmployeeBean = responseBean.getEmplyeeBeanList().stream().findFirst().orElse(null);//1件取得後なければnullを返す
+
+
 
             if (Objects.nonNull(resEmployeeBean)) {// nonNull:空じゃないか判別.1件取得していたら
                 // パスワードチェック

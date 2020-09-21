@@ -14,7 +14,8 @@ public final class ConstSQL {
     /** JDMC接続先情報 */
     // MEMO: PostgreSQLを複数バージョン使用している場合は、ポート番号も指定
     // TODO: 接続先のポート番号は個々で異なるため、pgAdminのPostgreSQLより、接続先設定を参照してXXXXへ記述すること。
-    public static final String JDBC_CONNECTION = "jdbc:postgresql://localhost:5432/lesson_db?useUnicode=true&characterEncoding=utf8";
+    public static final String JDBC_CONNECTION = "jdbc:postgresql://localhost:5432/lesson_db";
+//    public static final String JDBC_CONNECTION = "jdbc:postgresql://localhost:5432/lesson_db";
     /** ユーザー名 */
     public static final String JDBC_POSTGRES_USER = "postgres";
     /** パスワード */
@@ -27,9 +28,11 @@ public final class ConstSQL {
     /** 社員情報一覧取得用クエリ: 取得カラム + 取得元テーブル */
     public static final String SELECT_BASE = "SELECT empid,password,name,mail,programinglanguage,comment from employee";
     /** 社員情報一覧取得用クエリ: 削除されていない社員情報を社員番号順に取得 */
-    public static final String SELECT_BY_DELETE_FLG_ZERO = "SELECT empid,password,name,mail,programinglanguage,comment from employee WHERE deleteFlg = '0' ORDER BY empId";
+//    public static final String SELECT_BY_DELETE_FLG_ZERO = "SELECT empid,password,name,mail,programinglanguage,comment from employee WHERE deleteFlg = '0' ORDER BY empid";
+    public static final String SELECT_BY_DELETE_FLG_ZERO = " WHERE deleteflg = '0' ORDER BY empid";
     /** 社員番号を条件とするクエリ: 完全一致 */
-    public static final String SELECT_BY_EMPID = "SELECT empid,password,name,mail,programinglanguage,comment from employee WHERE empId = ? AND deleteFlg = '0'";
+//    public static final String SELECT_BY_EMPID = "SELECT empid,password,name,mail,programinglanguage,comment from employee WHERE empid = ? AND deleteFlg = '0'";
+    public static final String SELECT_BY_EMPID = " WHERE empid = ? AND deleteflg = '0'";
 
     /** プリペアードステートメントで使用するクエリの条件値用プレースホルダー */
     public static final String CONST_PLACEHOLDER_FOR_BIND_PARAM = "?";

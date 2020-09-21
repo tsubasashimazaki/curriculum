@@ -34,7 +34,7 @@ public abstract class BaseService {
 
     private static final String POSTGRES_DRIVER = "org.postgresql.Driver";
     /** ・JDMC接続先情報 */
-    private static final String JDBC_CONNECTION = "jdbc:postgresql://localhost:5432/Employee";
+    private static final String JDBC_CONNECTION = "jdbc:postgresql://localhost:5432/lesson_db?useUnicode=true&characterEncoding=utf8";
     /** ・ユーザー名 */
     private static final String USER = "postgres";
     /** ・パスワード */
@@ -66,14 +66,13 @@ public abstract class BaseService {
             // Tips: ConstSQLより適切な定数を参照
 
             // FIXME Step-5-2: postgresqlのドライバー名
-            Class.forName("POSTGRES_DRIVER");
+            Class.forName(POSTGRES_DRIVER);
 
             // FIXME Step-5-2: DBへ接続するための初期設定（引数すべてに記述すること）
             this.connection = DriverManager.getConnection(
-                    "JDBC_CONNECTION",
-                    "USER",
-                    "PASS");
-
+                    JDBC_CONNECTION,
+                    USER,
+                    PASS);
             // オートコミットOFF
             this.connection.setAutoCommit(false);
 
